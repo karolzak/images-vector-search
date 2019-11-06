@@ -73,7 +73,6 @@ def extract_features(imgs_np, pretrained_model="resnet50", pooling_method='avg')
     elif pretrained_model=="vgg19":
         base = VGG19(**model_args)
         from keras.applications.vgg19 import preprocess_input
-    return base
 
     feat_extractor = create_feat_extractor(base, pooling_method=pooling_method)
 
