@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# data
+101_ObjectCategories/
+*.gz
+*.tar.gz
