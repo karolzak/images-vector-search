@@ -36,7 +36,7 @@ def get_images(filenames, target_size=(200,200), color='RGB', bg_clr=0):
         im_res = im_square.resize(target_size)
         imgs_list.append(np.array(im_res))
 
-    imgs_np = np.asarray(imgs_list)
+    return np.asarray(imgs_list)
 
 
 def create_feat_extractor(base_model, pooling_method='avg'):
@@ -52,10 +52,11 @@ def create_feat_extractor(base_model, pooling_method='avg'):
     return model
 
 
-def extract_features(imgs_np, pretrained_model="resnet50"):    
+def extract_features(imgs_np, pretrained_model="resnet50", pooling_method='avg'):    
     print('Input images shape: ', imgs_np.shape)
     pretrained_model = pretrained_model.lower()
     assert pretrained_model in ['resnet50', 'inception_v3', 'vgg19']
+    assert pooling_method in ['avg', 'max']
 
     model_args={
         'weights': 'imagenet',
@@ -74,7 +75,7 @@ def extract_features(imgs_np, pretrained_model="resnet50"):
         from keras.applications.vgg19 import preprocess_input
     return base
 
-    feat_extractor = create_feat_extractor(base, pooling_method='avg')
+    feat_extractor = create_feat_extractor(base, pooling_method=pooling_method)
 
     imgs_np = preprocess_input(imgs_np)
     embeddings_np = feat_extractor.predict(imgs_np)
