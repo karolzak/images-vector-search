@@ -9,6 +9,7 @@ from keras.applications.inception_v3 import InceptionV3
 
 BASE = None
 FEAT_EXTRACTOR = None
+PREPROCESS_INPUT = None
 
 
 def get_filenames(glob_pattern, recursive=True):
@@ -162,12 +163,16 @@ def extract_features(imgs_np, pretrained_model="resnet50", pooling_method='avg')
             BASE = VGG19(**model_args)
             from keras.applications.vgg19 import preprocess_input
 
+    global PREPROCESS_INPUT
+    if PREPROCESS_INPUT is None:
+        PREPROCESS_INPUT = preprocess_input
+
     global FEAT_EXTRACTOR
     if FEAT_EXTRACTOR is None:
         # feat_extractor = create_feat_extractor(base, pooling_method=pooling_method)
         FEAT_EXTRACTOR = create_feat_extractor(BASE, pooling_method=pooling_method)
 
-    imgs_np = preprocess_input(imgs_np)
+    imgs_np = PREPROCESS_INPUT(imgs_np)
     embeddings_np = FEAT_EXTRACTOR.predict(imgs_np)
     print('Features shape: ', embeddings_np.shape)
     
