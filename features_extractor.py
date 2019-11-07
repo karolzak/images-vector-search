@@ -7,6 +7,9 @@ from keras.applications.vgg19 import VGG19
 from keras.applications.resnet50 import ResNet50
 from keras.applications.inception_v3 import InceptionV3
 
+BASE = None
+FEAT_EXTRACTOR = None
+
 
 def get_filenames(glob_pattern, recursive=True):
     """Extracts list of filenames (full paths) based on specific glob path pattern.
@@ -144,20 +147,28 @@ def extract_features(imgs_np, pretrained_model="resnet50", pooling_method='avg')
         'input_shape': imgs_np[0].shape
         }
 
-    if pretrained_model=="resnet50":
-        base = ResNet50(**model_args)
-        from keras.applications.resnet50 import preprocess_input
-    elif pretrained_model=="inception_v3":
-        base = InceptionV3(**model_args)
-        from keras.applications.inception_v3 import preprocess_input
-    elif pretrained_model=="vgg19":
-        base = VGG19(**model_args)
-        from keras.applications.vgg19 import preprocess_input
+    global BASE
+    if BASE is None:
+        if pretrained_model=="resnet50":
+            # base = ResNet50(**model_args)
+            BASE = ResNet50(**model_args)
+            from keras.applications.resnet50 import preprocess_input
+        elif pretrained_model=="inception_v3":
+            # base = InceptionV3(**model_args)
+            BASE = InceptionV3(**model_args)
+            from keras.applications.inception_v3 import preprocess_input
+        elif pretrained_model=="vgg19":
+            # base = VGG19(**model_args)
+            BASE = VGG19(**model_args)
+            from keras.applications.vgg19 import preprocess_input
 
-    feat_extractor = create_feat_extractor(base, pooling_method=pooling_method)
+    global FEAT_EXTRACTOR
+    if FEAT_EXTRACTOR is None:
+        # feat_extractor = create_feat_extractor(base, pooling_method=pooling_method)
+        FEAT_EXTRACTOR = create_feat_extractor(BASE, pooling_method=pooling_method)
 
     imgs_np = preprocess_input(imgs_np)
-    embeddings_np = feat_extractor.predict(imgs_np)
+    embeddings_np = FEAT_EXTRACTOR.predict(imgs_np)
     print('Features shape: ', embeddings_np.shape)
     
     return embeddings_np
